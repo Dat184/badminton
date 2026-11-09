@@ -48,9 +48,13 @@ public/            Static files (icons, images).
 
 ### Database
 
-- Schema changes are new timestamped SQL files in `supabase/migrations/`. Never edit a file that has already been applied; add a new one.
-- The owner applies each new file in the Supabase SQL Editor, in filename order. Agents write the SQL but never run it against the project.
-- There are two Supabase projects: a test project (the one in `.env.local`, used by `npm run dev`) and production (the Vercel env vars). Apply each new file to the test project first, then to production before deploying code that needs it.
+- Schema changes are new timestamped SQL files in `supabase/migrations/`. Never edit a file that has already been applied to either project; add a new one.
+- There are two Supabase projects: **test** (the one in `.env.local`, used by `npm run dev`, and the Supabase CLI's linked project) and **production** (the Vercel env vars).
+  - Test: apply new files with `npx supabase db push --remote` (check first with `npx supabase db push --remote --dry-run`). Without `--remote`, CLI v3 targets a local Docker stack.
+  - Production: the Supabase GitHub integration applies new files automatically on every push to `main`. Nobody applies them by hand.
+  - Never paste migration SQL into the Supabase SQL Editor. SQL run by hand is not recorded in `supabase_migrations.schema_migrations`, so the next automated run replays it and fails (`42P07 ... already exists`). If it happened anyway, record it with `npx supabase migration repair --status applied <version>`; never drop tables to "fix" it.
+  - Merge migrations into `main` in timestamp order: the integration rejects a file older than the newest one already applied. If a newer migration reached `main` first, rename yours to a later timestamp before merging (and `migration repair` the old version on the test project).
+  - Agents run migration commands only when the owner asks, only against the test project, and never `supabase db reset`.
 - Every table enables row-level security, grants `anon` and `authenticated` `SELECT` (everything is public to view), and grants `authenticated` only the columns it writes. No `DELETE` grants.
 - Read policies use `using (true)`; write policies check `(select auth.uid()) is not null`.
 - Members are archived (`archived_at`), never deleted; past sessions keep their names.

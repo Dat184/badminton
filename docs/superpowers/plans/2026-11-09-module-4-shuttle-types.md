@@ -21,7 +21,7 @@ Calls made by the planner (flagged for review): shuttle types are edited only on
 - Money is an integer number of VND. Tube price 1.000–10.000.000 ₫; shuttles per tube 1–100; name 1–40 code points, unique among active types ignoring case.
 - Shuttle types are never hard-deleted (`archived_at`); there is no `DELETE` grant.
 - Work on branch `feat/module-4-shuttle-types` from `main` (after Module 3 is merged). Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- Running SQL against a Supabase project and pushing to GitHub are owner-gated.
+- Running migrations (test project only; production is automatic on merge) and pushing to GitHub are owner-gated: the executor asks first.
 
 ### UI copy (Vietnamese, exact)
 
@@ -120,7 +120,7 @@ create policy "signed-in users edit shuttle types" on public.shuttle_types
   with check ((select auth.uid()) is not null);
 ```
 
-- [ ] **Step 3 (owner): Apply it to the test project** in the SQL Editor → `Success. No rows returned`. The executor asks; it never runs SQL itself.
+- [ ] **Step 3 (owner-gated): Apply it to the test project** — with the CLI linked to the test project: `npx supabase db push --remote --dry-run` must list exactly this file, then `npx supabase db push --remote`. Never through the SQL Editor (see `AGENTS.md` → Database). The executor asks the owner before running it.
 - [ ] **Step 4: Verify with the publishable key** (same curl setup as Module 3 Task 1 Step 4):
   1. `GET /rest/v1/shuttle_types?select=id` → HTTP 200, `[]`.
   2. `POST /rest/v1/shuttle_types` body `{"name":"probe","tube_price":100000,"tube_size":12}` → `"code":"42501"`.
@@ -201,4 +201,4 @@ Expected: four `{"ok":true,"amount":100000}`, then `invalid` × 4, then `empty`.
 
 ---
 
-After the tasks: superpowers:finishing-a-development-branch. Before merging, the owner applies `20261109190000_shuttle_types.sql` to **production**, and after the deploy adds the group's real shuttle type(s) on production `/admin`.
+After the tasks: superpowers:finishing-a-development-branch. Merge after Module 3 (migration timestamp order). The merge into `main` applies `20261109190000_shuttle_types.sql` to production automatically; after the deploy the owner adds the group's real shuttle type(s) on production `/admin`.

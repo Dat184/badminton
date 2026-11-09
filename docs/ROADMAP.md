@@ -33,6 +33,6 @@ Statuses: `Open`, `In progress`, `Done`, `Needs plan`.
 ## Working in parallel
 
 - Files several modules touch: `AGENTS.md`, `src/lib/money.ts`, `src/app/admin/page.tsx`, `src/app/page.tsx`. Keep edits there small and rebase on `main` before merging.
-- Migrations run in filename order. Planned names: M3 `20261109180000_sessions.sql`, M4 `20261109190000_shuttle_types.sql`, M5 `20261109200000_session_costs.sql`. A new module uses a timestamp later than every file already on `main`.
-- Only the owner applies SQL to the Supabase projects (test first, then production before the deploy that needs it). Ask the owner when a plan reaches that step.
-- Merging into `main` deploys to production on Vercel.
+- Migrations run in filename order. Planned names: M3 `20261109180000_sessions.sql`, M4 `20261109190000_shuttle_types.sql`, M5 `20261109200000_session_costs.sql`. A new module uses a timestamp later than every file already on `main`, and modules with migrations merge into `main` in timestamp order (production rejects an older file once a newer one is applied).
+- Migrations: on the test project with `npx supabase db push --remote` (ask the owner for access); production applies them automatically when they reach `main`. Never paste migration SQL into the SQL Editor. Details in `AGENTS.md` → Database.
+- Merging into `main` deploys the app on Vercel and applies new migrations to the production database at the same time.

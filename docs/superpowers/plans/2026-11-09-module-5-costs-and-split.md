@@ -35,7 +35,7 @@ Calls made by the planner (not discussed with the owner; flagged for review):
 - Shares, totals and the fund are computed, never stored.
 - Shuttle price is snapshotted onto the session when costs are saved (`shuttle_tube_price`, `shuttle_tube_size`); later price changes in admin do not touch saved sessions.
 - Work on branch `feat/module-5-costs` from `main` (after Modules 3 and 4 are merged). Commit messages end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- Running SQL against a Supabase project and pushing to GitHub are owner-gated.
+- Running migrations (test project only; production is automatic on merge) and pushing to GitHub are owner-gated: the executor asks first.
 
 ### UI copy (Vietnamese, exact)
 
@@ -204,7 +204,7 @@ create trigger sessions_guard_split
   for each row execute function public.sessions_guard_split();
 ```
 
-- [ ] **Step 3 (owner): Apply it to the test project** → `Success. No rows returned`. The executor asks; it never runs SQL itself.
+- [ ] **Step 3 (owner-gated): Apply it to the test project** — with the CLI linked to the test project: `npx supabase db push --remote --dry-run` must list exactly this file, then `npx supabase db push --remote`. Never through the SQL Editor (see `AGENTS.md` → Database). The executor asks the owner before running it.
 - [ ] **Step 4: Verify the lock through REST** (publishable key, same setup as Module 3; create a probe session `$SID` via `POST /rest/v1/sessions`):
   1. `PATCH sessions?id=eq.$SID` `{"split_at":"2026-11-09T00:00:00Z"}` → `"code":"23514"` (no court fee).
   2. `PATCH` `{"court_fee":120000,"shuttle_type_id":"<a type id>","shuttle_count":5,"shuttle_tube_price":100000,"shuttle_tube_size":12}` → 200. `PATCH` `{"split_at":…}` again → `"code":"23514"` (nobody ticked).
@@ -304,4 +304,4 @@ Expected: `[42000,100000,{"total":142000,"people":3,"share":48000,"collected":14
 
 ---
 
-After the tasks: superpowers:finishing-a-development-branch. Before merging, the owner applies `20261109200000_session_costs.sql` to **production** (Modules 3 and 4 migrations must already be there).
+After the tasks: superpowers:finishing-a-development-branch. Merge after Modules 3 and 4. The merge into `main` applies `20261109200000_session_costs.sql` to production automatically.

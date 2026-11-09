@@ -29,7 +29,7 @@ Calls made by the planner (not discussed with the owner; flagged for review): a 
 - Sessions are never hard-deleted (`archived_at`). `session_attendees` is the one table that grants `DELETE` (unticking removes the row).
 - Dates are plain `YYYY-MM-DD` strings in the Vietnam calendar; never pass them through a local-time `Date`. Format with `timeZone: "UTC"` on a `YYYY-MM-DDT00:00:00Z` instant.
 - Work on branch `feat/module-3-sessions` created from `main`. Every commit message ends with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- Running SQL against a Supabase project and pushing to GitHub are owner-gated: the executor asks first.
+- Running migrations (test project only; production is automatic on merge) and pushing to GitHub are owner-gated: the executor asks first.
 
 ### UI copy (Vietnamese, exact)
 
@@ -193,7 +193,7 @@ create policy "anyone leaves an open session" on public.session_attendees
   for delete to anon, authenticated using (public.session_is_open(session_id));
 ```
 
-- [ ] **Step 3 (owner): Apply it to the test project** — Supabase dashboard (test project) → SQL Editor → paste the whole file → Run. Expected: `Success. No rows returned`. The executor stops and asks the owner; it never runs SQL itself.
+- [ ] **Step 3 (owner-gated): Apply it to the test project** — with the CLI linked to the test project: `npx supabase db push --remote --dry-run` must list exactly this file, then `npx supabase db push --remote`. Never through the SQL Editor (see `AGENTS.md` → Database). The executor asks the owner before running it.
 - [ ] **Step 4: Verify access with the publishable key** (load env with `set -a; . ./.env.local; set +a`; never print the values; headers `apikey: $NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, plus `Content-Type: application/json` and `Prefer: return=representation` on writes):
   1. `POST /rest/v1/sessions` body `{"play_date":"2026-11-14","venue":"anon-probe"}` → HTTP 201, body has an `id`. Keep it as `$SID`.
   2. `POST /rest/v1/session_attendees` body `{"session_id":"$SID","guest_name":"probe"}` → 201.
@@ -316,4 +316,4 @@ create policy "anyone leaves an open session" on public.session_attendees
 
 ---
 
-After the tasks: superpowers:finishing-a-development-branch. Before merging into `main` (which deploys to production), the owner applies `20261109180000_sessions.sql` to the **production** project. Then confirm `curl -s -o /dev/null -w "%{http_code}\n" https://badminton-pink.vercel.app/sessions/new` → `200` and the home page shows `Buổi đánh`.
+After the tasks: superpowers:finishing-a-development-branch. `20261109180000_sessions.sql` is already applied to production (2026-11-09), so the merge into `main` only deploys the code. Then confirm `curl -s -o /dev/null -w "%{http_code}\n" https://badminton-pink.vercel.app/sessions/new` → `200` and the home page shows `Buổi đánh`.
