@@ -35,6 +35,7 @@ public/            Static files (icons, images).
 - No automated tests in this project. Verify changes with `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm run build`.
 - Docs and code comments in the repo are written in English. User-facing UI text is Vietnamese.
 - Commands: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run typecheck`, `npm run format`, `npm run format:check`.
+- Modules, their status and who is working on them: [docs/ROADMAP.md](docs/ROADMAP.md). Read it before starting any work and claim a module there first, as it describes.
 
 ### Auth
 

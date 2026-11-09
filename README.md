@@ -42,4 +42,4 @@ npm run dev        # http://localhost:3000
 | `npm run format`       | Format all files with Prettier          |
 | `npm run format:check` | Check formatting without changing files |
 
-Folder structure and code conventions: see [AGENTS.md](./AGENTS.md).
+Folder structure and code conventions: see [AGENTS.md](./AGENTS.md). Modules and who is working on what: see [docs/ROADMAP.md](./docs/ROADMAP.md).
