@@ -43,3 +43,11 @@ public/            Static files (icons, images).
 - The proxy (`src/proxy.ts`) is only an optimistic redirect; it does not replace server-side authorization checks.
 - Never use `getSession()` on the server (use `supabase.auth.getClaims()`).
 - From Module 2 on, Postgres row-level-security write policies must check the host's user id, not just "authenticated".
+
+### Database
+
+- Schema changes are new timestamped SQL files in `supabase/migrations/`. Never edit a file that has already been applied; add a new one.
+- The owner applies each new file in the Supabase SQL Editor, in filename order. Agents write the SQL but never run it against the project.
+- Every table enables row-level security, revokes all privileges from `anon` unless public read is intended, and grants `authenticated` only the columns it writes.
+- Write policies check `host_id = (select auth.uid())`.
+- Members are archived (`archived_at`), never deleted; past sessions keep their names.
