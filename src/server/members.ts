@@ -6,9 +6,9 @@ import { createSupabaseServerClient } from "@/server/supabase/server";
 export type MemberWriteResult =
   { ok: true } | { ok: false; reason: "duplicate" | "not_found" | "error" };
 
-type PostgresError = { code?: string } | null;
+type PostgresError = { code?: string; message?: string } | null;
 
-function toFailure(error: PostgresError): MemberWriteResult {
+function toFailure(operation: string, error: PostgresError): MemberWriteResult {
   if (error?.code === "23505") {
     return { ok: false, reason: "duplicate" };
   }
@@ -16,6 +16,13 @@ function toFailure(error: PostgresError): MemberWriteResult {
   if (error?.code === "22P02") {
     return { ok: false, reason: "not_found" };
   }
+  // The UI only shows a generic message, so keep the cause in the server logs.
+  console.error(`members: ${operation} failed`, error?.code, error?.message);
+  return { ok: false, reason: "error" };
+}
+
+function thrownFailure(operation: string, cause: unknown): MemberWriteResult {
+  console.error(`members: ${operation} threw`, cause);
   return { ok: false, reason: "error" };
 }
 
@@ -47,9 +54,9 @@ export async function insertMember(
     const supabase = await createSupabaseServerClient();
     // host_id is filled by the column default (auth.uid()).
     const { error } = await supabase.from("members").insert({ nickname });
-    return error ? toFailure(error) : { ok: true };
-  } catch {
-    return { ok: false, reason: "error" };
+    return error ? toFailure("insert", error) : { ok: true };
+  } catch (cause) {
+    return thrownFailure("insert", cause);
   }
 }
 
@@ -67,13 +74,13 @@ async function updateActiveMember(
       .select("id");
 
     if (error) {
-      return toFailure(error);
+      return toFailure("update", error);
     }
     return data && data.length > 0
       ? { ok: true }
       : { ok: false, reason: "not_found" };
-  } catch {
-    return { ok: false, reason: "error" };
+  } catch (cause) {
+    return thrownFailure("update", cause);
   }
 }
 

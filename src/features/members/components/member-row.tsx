@@ -1,6 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,7 +21,32 @@ type Mode = "view" | "edit" | "confirm";
 
 export function MemberRow({ member }: { member: Member }) {
   const [mode, setMode] = useState<Mode>("view");
-  const backToView = () => setMode("view");
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+  const removeButtonRef = useRef<HTMLButtonElement>(null);
+  // When an edit or confirmation closes, the focused control unmounts. Send
+  // focus back to the button that opened it instead of letting it drop to <body>.
+  const returnFocusTo = useRef<"edit" | "remove" | null>(null);
+
+  useEffect(() => {
+    if (mode !== "view" || returnFocusTo.current === null) {
+      return;
+    }
+    const target =
+      returnFocusTo.current === "edit"
+        ? editButtonRef.current
+        : removeButtonRef.current;
+    returnFocusTo.current = null;
+    target?.focus();
+  }, [mode]);
+
+  const closeEdit = () => {
+    returnFocusTo.current = "edit";
+    setMode("view");
+  };
+  const closeConfirm = () => {
+    returnFocusTo.current = "remove";
+    setMode("view");
+  };
 
   return (
     <li className="px-3 py-2">
@@ -23,33 +54,38 @@ export function MemberRow({ member }: { member: Member }) {
         <div className="flex items-center gap-2">
           <span className="min-w-0 flex-1 break-words">{member.nickname}</span>
           <Button
+            ref={editButtonRef}
             type="button"
             size="sm"
             variant="outline"
+            aria-label={`Sửa ${member.nickname}`}
             onClick={() => setMode("edit")}
           >
             Sửa
           </Button>
           <Button
+            ref={removeButtonRef}
             type="button"
             size="sm"
             variant="outline"
+            aria-label={`Bỏ ${member.nickname}`}
             onClick={() => setMode("confirm")}
           >
             Bỏ
           </Button>
         </div>
       ) : mode === "edit" ? (
-        <EditMemberForm member={member} onDone={backToView} />
+        <EditMemberForm member={member} onDone={closeEdit} />
       ) : (
-        <RemoveMemberConfirm member={member} onCancel={backToView} />
+        <RemoveMemberConfirm member={member} onCancel={closeConfirm} />
       )}
     </li>
   );
 }
 
 // Each mode is its own component so its action state (and any error) resets
-// when the row leaves that mode.
+// when the row leaves that mode. Both put their buttons on a second line, so a
+// double-click on Sửa/Bỏ lands on the field or the question, not on Lưu/Bỏ.
 function EditMemberForm({
   member,
   onDone,
@@ -61,7 +97,10 @@ function EditMemberForm({
     async (prevState: NicknameFormState, formData: FormData) => {
       const next = await renameMember(prevState, formData);
       if (next.saved) {
-        onDone();
+        // Code after an await runs outside the action's transition; keep the
+        // close in a transition so it commits together with the refreshed list
+        // instead of flashing the old nickname first.
+        startTransition(() => onDone());
       }
       return next;
     },
@@ -71,23 +110,23 @@ function EditMemberForm({
   return (
     <form action={formAction} className="flex flex-col gap-2">
       <input type="hidden" name="id" value={member.id} />
+      <Input
+        name="nickname"
+        aria-label="Biệt danh"
+        defaultValue={state.nickname}
+        maxLength={NICKNAME_MAX_LENGTH}
+        autoComplete="off"
+        autoFocus
+        required
+        aria-invalid={state.error ? true : undefined}
+      />
       <div className="flex gap-2">
-        <Input
-          name="nickname"
-          aria-label="Biệt danh"
-          defaultValue={state.nickname}
-          maxLength={NICKNAME_MAX_LENGTH}
-          autoComplete="off"
-          autoFocus
-          required
-          aria-invalid={state.error ? true : undefined}
-          className="min-w-0 flex-1"
-        />
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" size="sm" disabled={pending}>
           {pending ? "Đang lưu…" : "Lưu"}
         </Button>
         <Button
           type="button"
+          size="sm"
           variant="outline"
           onClick={onDone}
           disabled={pending}
@@ -133,12 +172,14 @@ function RemoveMemberConfirm({
         >
           {pending ? "Đang bỏ…" : "Bỏ"}
         </Button>
+        {/* Focus the safe choice when the question opens. */}
         <Button
           type="button"
           size="sm"
           variant="outline"
           onClick={onCancel}
           disabled={pending}
+          autoFocus
         >
           Hủy
         </Button>

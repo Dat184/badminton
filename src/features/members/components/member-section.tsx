@@ -10,7 +10,8 @@ export async function MemberSection() {
   let members: Member[];
   try {
     members = await listActiveMembers();
-  } catch {
+  } catch (cause) {
+    console.error("members: list failed", cause);
     return (
       <p role="alert" className="text-sm text-destructive">
         Không tải được danh sách thành viên, vui lòng tải lại trang.

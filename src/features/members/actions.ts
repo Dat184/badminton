@@ -58,6 +58,11 @@ export async function addMember(
 
   const result = await insertMember(parsed.nickname);
   if (!result.ok) {
+    if (result.reason === "duplicate") {
+      // The duplicate may have been added in another tab: show it here too.
+      // The add form stays mounted, so its error survives the refresh.
+      refresh();
+    }
     return {
       error: failureMessage(result),
       nickname: parsed.nickname,
@@ -92,6 +97,11 @@ export async function renameMember(
 
   const result = await updateMemberNickname(id, parsed.nickname);
   if (!result.ok) {
+    if (result.reason === "duplicate") {
+      // Same as addMember: surface a member added in another tab. This row is
+      // still active, so it stays mounted in edit mode and keeps its error.
+      refresh();
+    }
     return {
       error: failureMessage(result),
       nickname: parsed.nickname,
