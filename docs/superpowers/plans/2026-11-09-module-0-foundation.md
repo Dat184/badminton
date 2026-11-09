@@ -31,18 +31,18 @@
 
 ## File Structure
 
-| Path | Change | Responsibility |
-|---|---|---|
-| `.gitignore` | Modify | Add `.superpowers/` |
-| `package.json`, `package-lock.json` | Modify | Drop Vitest deps + `test`/`test:run` scripts; add shadcn deps |
-| `vitest.config.mts`, `src/lib/money.test.ts` | Delete | Test tooling removed |
-| `components.json` | Create (by shadcn CLI) | shadcn config |
-| `src/lib/utils.ts` | Create (by shadcn CLI) | Re-exports `cn` |
-| `src/components/ui/button.tsx` | Create (by shadcn CLI) | First UI primitive (used by Module 1 login form) |
-| `src/components/ui/.gitkeep` | Delete | Folder no longer empty |
-| `src/app/globals.css` | Modify (by CLI + manual fix) | shadcn theme tokens; font fix |
-| `src/app/layout.tsx`, `src/lib/money.ts` | Modify | Comments translated to English |
-| `README.md`, `AGENTS.md` | Modify | English, describe final state |
+| Path                                         | Change                       | Responsibility                                                |
+| -------------------------------------------- | ---------------------------- | ------------------------------------------------------------- |
+| `.gitignore`                                 | Modify                       | Add `.superpowers/`                                           |
+| `package.json`, `package-lock.json`          | Modify                       | Drop Vitest deps + `test`/`test:run` scripts; add shadcn deps |
+| `vitest.config.mts`, `src/lib/money.test.ts` | Delete                       | Test tooling removed                                          |
+| `components.json`                            | Create (by shadcn CLI)       | shadcn config                                                 |
+| `src/lib/utils.ts`                           | Create (by shadcn CLI)       | Re-exports `cn`                                               |
+| `src/components/ui/button.tsx`               | Create (by shadcn CLI)       | First UI primitive (used by Module 1 login form)              |
+| `src/components/ui/.gitkeep`                 | Delete                       | Folder no longer empty                                        |
+| `src/app/globals.css`                        | Modify (by CLI + manual fix) | shadcn theme tokens; font fix                                 |
+| `src/app/layout.tsx`, `src/lib/money.ts`     | Modify                       | Comments translated to English                                |
+| `README.md`, `AGENTS.md`                     | Modify                       | English, describe final state                                 |
 
 ---
 
@@ -51,9 +51,11 @@
 The working tree already holds the earlier scaffold (app moved to `src/`, Prettier, Vitest, Vietnamese docs). Commit it as-is so later tasks have reviewable diffs.
 
 **Files:**
+
 - Modify: `.gitignore` (append at end)
 
 **Interfaces:**
+
 - Produces: branch `chore/module-0-foundation` with a clean working tree.
 
 - [ ] **Step 1: Create the branch**
@@ -91,10 +93,12 @@ Expected: `git status --short` prints nothing.
 ### Task 2: Remove test tooling
 
 **Files:**
+
 - Delete: `vitest.config.mts`, `src/lib/money.test.ts`
 - Modify: `package.json` (deps + scripts), `package-lock.json`
 
 **Interfaces:**
+
 - Consumes: Task 1 branch.
 - Produces: `package.json` scripts exactly: `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`. `src/lib/money.ts` keeps `formatVND(amount: number): string`.
 
@@ -121,15 +125,17 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 3: Install shadcn/ui
 
 **Files:**
+
 - Create (CLI): `components.json`, `src/lib/utils.ts`, `src/components/ui/button.tsx`
 - Modify: `src/app/globals.css`, `package.json`, `package-lock.json`
 - Delete: `src/components/ui/.gitkeep`
 
 **Interfaces:**
+
 - Produces: `import { Button } from "@/components/ui/button"`; `import { cn } from "@/lib/utils"` (re-export of the `cn` package from github.com/shadcn-ui/cn). Add more primitives later with `npx shadcn@4.23.0 add <name>`.
 
 - [ ] **Step 1: Run the CLI** — `npx -y shadcn@4.23.0 init -d` (defaults = template `next`, preset `base-nova`).
-Expected output ends with `Project initialization completed.` and lists `src/components/ui/button.tsx`, `src/lib/utils.ts`. It adds deps `@base-ui/react`, `class-variance-authority`, `cn`, `lucide-react`, `shadcn`, `tw-animate-css` (`shadcn` is a runtime dep because `globals.css` imports `shadcn/tailwind.css`).
+      Expected output ends with `Project initialization completed.` and lists `src/components/ui/button.tsx`, `src/lib/utils.ts`. It adds deps `@base-ui/react`, `class-variance-authority`, `cn`, `lucide-react`, `shadcn`, `tw-animate-css` (`shadcn` is a runtime dep because `globals.css` imports `shadcn/tailwind.css`).
 
 - [ ] **Step 2: Delete** `src/components/ui/.gitkeep`.
 
@@ -144,7 +150,7 @@ Run: `grep -n "prefers-color-scheme" src/app/globals.css`
 Expected: no output (only shadcn's `.dark { … }` block remains; app is light-only).
 
 - [ ] **Step 5: Format** — `npm run format`, then `npm run format:check`
-Expected: `All matched files use Prettier code style!`
+      Expected: `All matched files use Prettier code style!`
 
 - [ ] **Step 6: Verify**
 
@@ -167,9 +173,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ### Task 4: English docs and comments
 
 **Files:**
+
 - Modify: `README.md`, `AGENTS.md` (only the part after `<!-- END:nextjs-agent-rules -->`; never edit inside the managed block), `src/app/layout.tsx` (comment above `geistSans`), `src/lib/money.ts` (doc comments)
 
 **Interfaces:**
+
 - Consumes: final state from Tasks 2–3.
 
 - [ ] **Step 1: Rewrite `README.md` in English** — one-line description (badminton session scheduling + splitting court/water/shuttlecock costs, Next.js + Supabase + Vercel), "Run locally" (`npm install`, `npm run dev` → http://localhost:3000), a commands table with exactly the 7 scripts from Task 2, and a pointer to `AGENTS.md` for structure and conventions.
