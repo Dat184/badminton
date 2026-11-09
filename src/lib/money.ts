@@ -1,6 +1,6 @@
 /**
- * Tiền luôn lưu và tính bằng số nguyên VND (không có phần lẻ),
- * chỉ format thành chuỗi khi hiển thị.
+ * Money is always stored and computed as an integer number of VND
+ * (no fractional part) and only formatted to a string for display.
  */
 const vndFormatter = new Intl.NumberFormat("vi-VN", {
   style: "currency",

@@ -1,24 +1,24 @@
-# Cầu lông
+# Badminton
 
-App lên lịch đánh cầu lông và chia tiền sân, nước, cầu cho cả nhóm. Next.js + Tailwind, deploy lên Vercel.
+Schedule badminton sessions and split the court, water and shuttlecock costs across the group. Built with Next.js and Supabase, deployed on Vercel.
 
-## Chạy local
+## Run locally
 
 ```bash
 npm install
 npm run dev        # http://localhost:3000
 ```
 
-## Lệnh hay dùng
+## Commands
 
-| Lệnh                | Việc                        |
-| ------------------- | --------------------------- |
-| `npm run dev`       | Chạy server dev             |
-| `npm test`          | Chạy test ở chế độ watch    |
-| `npm run test:run`  | Chạy test một lần           |
-| `npm run lint`      | Kiểm tra ESLint             |
-| `npm run typecheck` | Kiểm tra kiểu TypeScript    |
-| `npm run format`    | Format code bằng Prettier   |
-| `npm run build`     | Build production như Vercel |
+| Command                | What it does                            |
+| ---------------------- | --------------------------------------- |
+| `npm run dev`          | Start the dev server                    |
+| `npm run build`        | Production build (same as Vercel)       |
+| `npm run start`        | Serve the production build              |
+| `npm run lint`         | Run ESLint                              |
+| `npm run typecheck`    | Type-check with TypeScript              |
+| `npm run format`       | Format all files with Prettier          |
+| `npm run format:check` | Check formatting without changing files |
 
-Cấu trúc thư mục và quy ước code: xem [AGENTS.md](./AGENTS.md).
+Folder structure and code conventions: see [AGENTS.md](./AGENTS.md).

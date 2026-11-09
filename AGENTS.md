@@ -8,26 +8,30 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## Project: app cầu lông
+## Project: badminton app
 
-App lên lịch đánh cầu lông và chia tiền (sân, nước, cầu) cho cả nhóm. Next.js 16 (App Router) + Tailwind v4, deploy lên Vercel. UI tiếng Việt.
+An app for a badminton group: the organizer creates a session, ticks who came, enters the court, water and shuttlecock costs, and the app splits the total per person. Members open a shared link to see what they owe and mark themselves as paid. Only the organizer logs in, and only to edit.
 
-### Cấu trúc thư mục
+Stack: Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui (`base-nova` preset, Base UI primitives), Supabase (from Module 1), deployed on Vercel.
+
+### Folder structure
 
 ```
 src/
-  app/            Chỉ chứa routing: page, layout, loading, error, route. Giữ mỏng, gọi xuống features/.
-  components/ui/  Component giao diện dùng chung, không biết gì về nghiệp vụ (Button, Input, Card...).
-  features/<tên>/ Mỗi tính năng một thư mục (vd: groups, sessions, billing), gồm component,
-                  server action và logic riêng của tính năng đó.
-  lib/            Hàm thuần dùng chung, không phụ thuộc React hay DB (format tiền, ngày...).
-  server/         Code chỉ chạy phía server: kết nối DB, truy vấn. Không import từ client component.
-public/           File tĩnh (icon, ảnh).
+  app/             Routing only: page, layout, loading, error, route. Keep thin; call into features/.
+  components/ui/   Shared, domain-agnostic UI primitives from shadcn/ui.
+                   Add more with `npx shadcn@4.23.0 add <name>`.
+  features/<name>/ One folder per feature (e.g. groups, sessions, billing) holding its
+                   components, server actions and logic.
+  lib/             Pure shared helpers with no React or database dependency (money, dates...).
+  server/          Server-only code: database client and queries. Never import from client components.
+public/            Static files (icons, images).
 ```
 
-### Quy ước
+### Conventions
 
-- Import qua alias `@/` (trỏ vào `src/`), ví dụ `import { formatVND } from "@/lib/money"`.
-- Tiền luôn là số nguyên VND, chỉ format khi hiển thị (`formatVND`).
-- Logic tính/chia tiền viết thành hàm thuần và có test; test đặt cạnh file, tên `*.test.ts`.
-- Lệnh: `npm run dev`, `npm test` (watch), `npm run test:run`, `npm run lint`, `npm run typecheck`, `npm run format`.
+- Import through the `@/` alias (points to `src/`), e.g. `import { formatVND } from "@/lib/money"`.
+- Money is always an integer number of VND; format only for display with `formatVND`.
+- No automated tests in this project. Verify changes with `npm run lint`, `npm run typecheck` and `npm run build`.
+- Docs and code comments in the repo are written in English. User-facing UI text is Vietnamese.
+- Commands: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run typecheck`, `npm run format`, `npm run format:check`.
