@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { MemberSection } from "@/features/members/components/member-section";
 import { requireHost } from "@/server/auth";
 
 export const metadata: Metadata = {
@@ -21,6 +22,9 @@ export default function AdminPage() {
       </div>
       <Suspense fallback="Đang tải…">
         <HostGreeting />
+      </Suspense>
+      <Suspense fallback="Đang tải…">
+        <MemberSection />
       </Suspense>
     </main>
   );
