@@ -6,7 +6,7 @@ Schedule badminton sessions and split the court, water and shuttlecock costs acr
 
 1. Create a Free Supabase project in **Southeast Asia (Singapore)**.
 2. Copy the Project URL and the publishable key (`sb_publishable_...`) from **Project Settings → API Keys**.
-3. Create the single host user in **Authentication → Users → Add user** (with **Auto Confirm User** enabled).
+3. Create the single host user in **Authentication → Users → Add user** (with **Auto Confirm User** enabled). Never delete this user later: the member list belongs to its user id and is deleted with it. If the password is lost, reset it from the same screen instead.
 4. In the **SQL Editor**, run each file in `supabase/migrations/` in filename order.
 5. Turn off **"Allow new users to sign up"** in **Authentication → Sign In / Providers**.
 6. Copy `.env.example` to `.env.local` and fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
