@@ -1,1 +1,17 @@
-{"0": "Project Rules & Conventions", "1": "Admin & Member Management", "2": "Login & UI Primitives", "3": "shadcn Config", "4": "TypeScript Config", "5": "Runtime Dependencies", "6": "Dev Tooling Dependencies", "7": "Supabase Session Proxy", "8": "Package Metadata", "9": "npm Scripts", "10": "ESLint Config", "11": "Root Layout", "12": "Prettier Config", "13": "Vercel Config", "14": "React Types"}
+{
+  "0": "Project Rules & Conventions",
+  "1": "Admin & Member Management",
+  "2": "Login & UI Primitives",
+  "3": "shadcn Config",
+  "4": "TypeScript Config",
+  "5": "Runtime Dependencies",
+  "6": "Dev Tooling Dependencies",
+  "7": "Supabase Session Proxy",
+  "8": "Package Metadata",
+  "9": "npm Scripts",
+  "10": "ESLint Config",
+  "11": "Root Layout",
+  "12": "Prettier Config",
+  "13": "Vercel Config",
+  "14": "React Types"
+}

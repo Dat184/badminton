@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { PublicMemberList } from "@/features/members/components/public-member-list";
+import { SessionList } from "@/features/sessions/components/session-list";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,9 @@ export default function HomePage() {
           Lên lịch đánh cầu và chia tiền sân, nước, cầu cho cả nhóm.
         </p>
       </div>
+      <Suspense fallback="Đang tải…">
+        <SessionList />
+      </Suspense>
       <Suspense fallback="Đang tải…">
         <PublicMemberList />
       </Suspense>

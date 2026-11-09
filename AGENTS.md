@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project: badminton app
 
-An app for a badminton group: the organizer creates a session, ticks who came, enters the court, water and shuttlecock costs, and the app splits the total per person. It is an internal app: anyone can view everything (members, sessions, costs) without logging in; logging in is only for editing, and any signed-in account can edit everything.
+An app for a badminton group: the organizer creates a session, ticks who came, enters the court, water and shuttlecock costs, and the app splits the total per person. It is an internal app: anyone can view everything (members, sessions, costs) without logging in; anyone can create sessions and tick attendance without logging in; logging in is for the member list and (Module 4) shuttle types, and any signed-in account can edit everything.
 
 Stack: Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui (`base-nova` preset, Base UI primitives), Supabase (from Module 1), deployed on Vercel.
 
@@ -42,6 +42,7 @@ public/            Static files (icons, images).
 - Accounts are created by the owner in the Supabase dashboard. Sign-ups must stay disabled: with shared editing, being signed in is the only gate for writes.
 - Viewing needs no login. Editing pages (`/admin`, `/login`) are not linked from public pages and are marked `noindex`; do not list them in a `robots.txt`.
 - Every admin page and every admin server action calls `requireHost()` first.
+- Session pages and session actions are public on purpose and never call `requireHost()`.
 - The proxy (`src/proxy.ts`) is only an optimistic redirect; it does not replace server-side authorization checks.
 - Never use `getSession()` on the server (use `supabase.auth.getClaims()`).
 - Rows are not owned per account: there is no `host_id`, and every signed-in account edits the same data.
@@ -55,6 +56,6 @@ public/            Static files (icons, images).
   - Never paste migration SQL into the Supabase SQL Editor. SQL run by hand is not recorded in `supabase_migrations.schema_migrations`, so the next automated run replays it and fails (`42P07 ... already exists`). If it happened anyway, record it with `npx supabase migration repair --status applied <version>`; never drop tables to "fix" it.
   - Merge migrations into `main` in timestamp order: the integration rejects a file older than the newest one already applied. If a newer migration reached `main` first, rename yours to a later timestamp before merging (and `migration repair` the old version on the test project).
   - Agents run migration commands only when the owner asks, only against the test project, and never `supabase db reset`.
-- Every table enables row-level security, grants `anon` and `authenticated` `SELECT` (everything is public to view), and grants `authenticated` only the columns it writes. No `DELETE` grants.
-- Read policies use `using (true)`; write policies check `(select auth.uid()) is not null`.
+- Every table enables row-level security, grants `anon` and `authenticated` `SELECT` (everything is public to view); login-gated tables (`members`, later `shuttle_types`) grant writes to `authenticated` only and their write policies check `(select auth.uid()) is not null`; public-write tables (`sessions`, `session_attendees`, and Module 5's cost tables) grant `anon` and `authenticated` only the columns the app writes, and attendance-like rows may change only while `public.session_is_open(session_id)` is true; `session_attendees` is the only table with a `DELETE` grant (unticking); sessions are archived, never deleted.
+- Read policies use `using (true)`.
 - Members are archived (`archived_at`), never deleted; past sessions keep their names.
