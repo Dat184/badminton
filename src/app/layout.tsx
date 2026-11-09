@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// The "vietnamese" subset is required so diacritics (ạ, ế, ữ...) don't fall back to another font.
+// Preload the vietnamese subset so diacritics (ạ, ế, ữ...) don't briefly render in the fallback font.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin", "vietnamese"],

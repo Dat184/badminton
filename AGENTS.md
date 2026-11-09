@@ -32,6 +32,6 @@ public/            Static files (icons, images).
 
 - Import through the `@/` alias (points to `src/`), e.g. `import { formatVND } from "@/lib/money"`.
 - Money is always an integer number of VND; format only for display with `formatVND`.
-- No automated tests in this project. Verify changes with `npm run lint`, `npm run typecheck` and `npm run build`.
+- No automated tests in this project. Verify changes with `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm run build`.
 - Docs and code comments in the repo are written in English. User-facing UI text is Vietnamese.
 - Commands: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run typecheck`, `npm run format`, `npm run format:check`.
