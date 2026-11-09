@@ -49,6 +49,7 @@ public/            Static files (icons, images).
 
 - Schema changes are new timestamped SQL files in `supabase/migrations/`. Never edit a file that has already been applied; add a new one.
 - The owner applies each new file in the Supabase SQL Editor, in filename order. Agents write the SQL but never run it against the project.
+- There are two Supabase projects: a test project (the one in `.env.local`, used by `npm run dev`) and production (the Vercel env vars). Apply each new file to the test project first, then to production before deploying code that needs it.
 - Every table enables row-level security, grants `anon` and `authenticated` `SELECT` (everything is public to view), and grants `authenticated` only the columns it writes. No `DELETE` grants.
 - Read policies use `using (true)`; write policies check `(select auth.uid()) is not null`.
 - Members are archived (`archived_at`), never deleted; past sessions keep their names.

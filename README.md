@@ -11,6 +11,8 @@ Schedule badminton sessions and split the court, water and shuttlecock costs acr
 5. Turn off **"Allow new users to sign up"** in **Authentication → Sign In / Providers**.
 6. Copy `.env.example` to `.env.local` and fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 
+> **Two projects:** use a separate test project in `.env.local` for local development and keep production for Vercel. Run every migration on the test project first, then on production before deploying.
+
 > **Note:** A Free Supabase project pauses after ~1 week without traffic and is restored from the dashboard.
 
 ## Run locally
