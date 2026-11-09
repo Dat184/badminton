@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Project: badminton app
 
-An app for a badminton group: the organizer creates a session, ticks who came, enters the court, water and shuttlecock costs, and the app splits the total per person. Members open a shared link to see what they owe and mark themselves as paid. Only the organizer logs in, and only to edit.
+An app for a badminton group: the organizer creates a session, ticks who came, enters the court, water and shuttlecock costs, and the app splits the total per person. It is an internal app: anyone can view everything (members, sessions, costs) without logging in; logging in is only for editing, and any signed-in account can edit everything.
 
 Stack: Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui (`base-nova` preset, Base UI primitives), Supabase (from Module 1), deployed on Vercel.
 
@@ -38,16 +38,17 @@ public/            Static files (icons, images).
 
 ### Auth
 
-- Only the host logs in. Sign-ups must stay disabled in Supabase.
+- Accounts are created by the owner in the Supabase dashboard. Sign-ups must stay disabled: with shared editing, being signed in is the only gate for writes.
+- Viewing needs no login. Editing pages (`/admin`, `/login`) are not linked from public pages and are marked `noindex`; do not list them in a `robots.txt`.
 - Every admin page and every admin server action calls `requireHost()` first.
 - The proxy (`src/proxy.ts`) is only an optimistic redirect; it does not replace server-side authorization checks.
 - Never use `getSession()` on the server (use `supabase.auth.getClaims()`).
-- From Module 2 on, Postgres row-level-security write policies must check the host's user id, not just "authenticated".
+- Rows are not owned per account: there is no `host_id`, and every signed-in account edits the same data.
 
 ### Database
 
 - Schema changes are new timestamped SQL files in `supabase/migrations/`. Never edit a file that has already been applied; add a new one.
 - The owner applies each new file in the Supabase SQL Editor, in filename order. Agents write the SQL but never run it against the project.
-- Every table enables row-level security, revokes all privileges from `anon` unless public read is intended, and grants `authenticated` only the columns it writes.
-- Write policies check `host_id = (select auth.uid())`.
+- Every table enables row-level security, grants `anon` and `authenticated` `SELECT` (everything is public to view), and grants `authenticated` only the columns it writes. No `DELETE` grants.
+- Read policies use `using (true)`; write policies check `(select auth.uid()) is not null`.
 - Members are archived (`archived_at`), never deleted; past sessions keep their names.

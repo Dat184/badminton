@@ -6,6 +6,7 @@ import { requireHost } from "@/server/auth";
 
 export const metadata: Metadata = {
   title: "Quản lý",
+  robots: { index: false, follow: false },
 };
 
 async function HostGreeting() {

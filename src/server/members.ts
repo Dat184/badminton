@@ -26,6 +26,9 @@ function thrownFailure(operation: string, cause: unknown): MemberWriteResult {
   return { ok: false, reason: "error" };
 }
 
+// Callers must already be at request time (requireHost() or `await connection()`)
+// and must do that outside any try/catch: during prerendering connection()
+// rejects on purpose, and catching that turns the abort into a rendered error.
 export async function listActiveMembers(): Promise<Member[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
@@ -52,7 +55,6 @@ export async function insertMember(
 ): Promise<MemberWriteResult> {
   try {
     const supabase = await createSupabaseServerClient();
-    // host_id is filled by the column default (auth.uid()).
     const { error } = await supabase.from("members").insert({ nickname });
     return error ? toFailure("insert", error) : { ok: true };
   } catch (cause) {
