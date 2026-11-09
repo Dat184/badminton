@@ -2,12 +2,30 @@
 
 Schedule badminton sessions and split the court, water and shuttlecock costs across the group. Built with Next.js and Supabase, deployed on Vercel.
 
+## Setup
+
+1. Create a Free Supabase project in **Southeast Asia (Singapore)**.
+2. Copy the Project URL and the publishable key (`sb_publishable_...`) from **Project Settings → API Keys**.
+3. Create the single host user in **Authentication → Users → Add user** (with **Auto Confirm User** enabled).
+4. Turn off **"Allow new users to sign up"** in **Authentication → Sign In / Providers**.
+5. Copy `.env.example` to `.env.local` and fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+
+> **Note:** A Free Supabase project pauses after ~1 week without traffic and is restored from the dashboard.
+
 ## Run locally
 
 ```bash
 npm install
 npm run dev        # http://localhost:3000
 ```
+
+## Deploy
+
+1. Import the repository in [Vercel](https://vercel.com).
+2. Set the environment variables for both **Production** and **Preview**:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+3. Deploy. Serverless functions are pinned to region `sin1` (Singapore) via `vercel.json` to stay close to the database.
 
 ## Commands
 

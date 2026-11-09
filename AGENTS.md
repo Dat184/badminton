@@ -35,3 +35,11 @@ public/            Static files (icons, images).
 - No automated tests in this project. Verify changes with `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm run build`.
 - Docs and code comments in the repo are written in English. User-facing UI text is Vietnamese.
 - Commands: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run typecheck`, `npm run format`, `npm run format:check`.
+
+### Auth
+
+- Only the host logs in. Sign-ups must stay disabled in Supabase.
+- Every admin page and every admin server action calls `requireHost()` first.
+- The proxy (`src/proxy.ts`) is only an optimistic redirect; it does not replace server-side authorization checks.
+- Never use `getSession()` on the server (use `supabase.auth.getClaims()`).
+- From Module 2 on, Postgres row-level-security write policies must check the host's user id, not just "authenticated".
