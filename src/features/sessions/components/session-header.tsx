@@ -1,6 +1,8 @@
 "use client";
 
+import { Pencil, Trash2 } from "lucide-react";
 import { useActionState, useEffect, useRef, useState } from "react";
+import { Board, BoardBackLink, BoardBar } from "@/components/ui/board";
 import { Button } from "@/components/ui/button";
 import {
   type ActionResult,
@@ -8,12 +10,19 @@ import {
   editSession,
 } from "@/features/sessions/actions";
 import { SessionForm } from "@/features/sessions/components/session-form";
+import { SessionScoreboard } from "@/features/sessions/components/session-scoreboard";
 import type { SessionSummary } from "@/features/sessions/session";
-import { formatSessionDate, formatSessionWhen } from "@/lib/dates";
+import { formatSessionDate } from "@/lib/dates";
 
 type Mode = "view" | "edit" | "confirm";
 
-export function SessionHeader({ session }: { session: SessionSummary }) {
+export function SessionHeader({
+  session,
+  today,
+}: {
+  session: SessionSummary;
+  today: string;
+}) {
   const [mode, setMode] = useState<Mode>("view");
   const editButtonRef = useRef<HTMLButtonElement>(null);
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
@@ -42,53 +51,65 @@ export function SessionHeader({ session }: { session: SessionSummary }) {
     setMode("view");
   };
 
-  if (mode === "edit") {
-    return (
-      <SessionForm
-        action={editSession}
-        sessionId={session.id}
-        initialValues={{
-          playDate: session.playDate,
-          startTime: session.startTime ?? "",
-          venue: session.venue ?? "",
-        }}
-        submitLabel="Lưu"
-        pendingLabel="Đang lưu…"
-        onCancel={closeEdit}
-      />
-    );
-  }
-
-  if (mode === "confirm") {
-    return <DeleteSessionConfirm session={session} onCancel={closeConfirm} />;
-  }
-
   return (
-    <div className="flex flex-col gap-3">
-      <h1 className="text-3xl font-semibold tracking-tight break-words">
-        {formatSessionWhen(session)}
-      </h1>
-      <div className="flex gap-2">
-        <Button
-          ref={editButtonRef}
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={() => setMode("edit")}
-        >
-          Sửa
-        </Button>
-        <Button
-          ref={deleteButtonRef}
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={() => setMode("confirm")}
-        >
-          Xóa buổi
-        </Button>
-      </div>
-    </div>
+    <Board>
+      <BoardBar>
+        <BoardBackLink href="/">Cầu lông</BoardBackLink>
+        {mode === "view" ? (
+          <div className="flex gap-2">
+            <Button
+              ref={editButtonRef}
+              type="button"
+              size="sm"
+              variant="board"
+              onClick={() => setMode("edit")}
+            >
+              <Pencil aria-hidden />
+              Sửa
+            </Button>
+            <Button
+              ref={deleteButtonRef}
+              type="button"
+              size="sm"
+              variant="board"
+              onClick={() => setMode("confirm")}
+            >
+              <Trash2 aria-hidden />
+              Xóa buổi
+            </Button>
+          </div>
+        ) : null}
+      </BoardBar>
+
+      {mode === "edit" ? (
+        <div className="mt-4 rounded-md bg-card p-4 text-card-foreground">
+          <h1 className="mb-4 text-lg font-bold">Sửa buổi đánh</h1>
+          <SessionForm
+            action={editSession}
+            sessionId={session.id}
+            initialValues={{
+              playDate: session.playDate,
+              startTime: session.startTime ?? "",
+              venue: session.venue ?? "",
+            }}
+            submitLabel="Lưu"
+            pendingLabel="Đang lưu…"
+            onCancel={closeEdit}
+          />
+        </div>
+      ) : mode === "confirm" ? (
+        <DeleteSessionConfirm session={session} onCancel={closeConfirm} />
+      ) : (
+        <div className="mt-4">
+          <SessionScoreboard
+            playDate={session.playDate}
+            startTime={session.startTime}
+            venue={session.venue}
+            today={today}
+          />
+        </div>
+      )}
+    </Board>
   );
 }
 
@@ -109,25 +130,19 @@ function DeleteSessionConfirm({
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-lg border p-3"
+      className="mt-4 flex flex-col gap-4 rounded-md bg-card p-4 text-card-foreground"
     >
       <input type="hidden" name="id" value={session.id} />
-      <p className="text-sm font-medium break-words">
+      <h1 className="text-lg font-bold break-words">
         Xóa buổi {formatSessionDate(session.playDate)}?
-      </p>
+      </h1>
       <div className="flex gap-2">
-        <Button
-          type="submit"
-          size="sm"
-          variant="destructive"
-          disabled={pending}
-        >
-          {pending ? "Đang xóa…" : "Xóa"}
+        <Button type="submit" variant="destructive" disabled={pending}>
+          {pending ? "Đang xóa…" : "Xóa buổi"}
         </Button>
         {/* Focus the safe choice when the question opens. */}
         <Button
           type="button"
-          size="sm"
           variant="outline"
           onClick={onCancel}
           disabled={pending}
@@ -137,7 +152,7 @@ function DeleteSessionConfirm({
         </Button>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       ) : null}

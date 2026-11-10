@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { LoadingLabel, Skeleton } from "@/components/ui/skeleton";
 import type { Member } from "@/features/members/member";
 import { listActiveMembers } from "@/server/members";
 
@@ -15,7 +16,7 @@ export async function PublicMemberList() {
   } catch (cause) {
     console.error("members: public list failed", cause);
     return (
-      <p role="alert" className="text-sm text-destructive">
+      <p role="alert" className="text-sm font-medium text-destructive">
         Không tải được danh sách thành viên, vui lòng tải lại trang.
       </p>
     );
@@ -26,23 +27,40 @@ export async function PublicMemberList() {
       aria-labelledby="public-members-heading"
       className="flex flex-col gap-3"
     >
-      <h2
-        id="public-members-heading"
-        className="text-xl font-semibold tracking-tight"
-      >
-        Thành viên ({members.length})
-      </h2>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id="public-members-heading" className="text-lg font-bold">
+          Thành viên
+        </h2>
+        <span className="text-sm font-semibold text-muted-foreground tabular-nums">
+          {members.length} người
+        </span>
+      </div>
       {members.length === 0 ? (
-        <p className="text-sm text-foreground/70">Chưa có thành viên nào.</p>
+        <p className="rounded-md border border-dashed border-input/50 bg-card px-4 py-6 text-center text-[0.9375rem] text-muted-foreground">
+          Nhóm chưa có thành viên nào.
+        </p>
       ) : (
-        <ul className="flex flex-col divide-y rounded-lg border">
+        <ul className="flex flex-wrap gap-2 rounded-md border bg-card p-3">
           {members.map((member) => (
-            <li key={member.id} className="px-3 py-2 break-words">
+            <li
+              key={member.id}
+              className="rounded-sm bg-muted px-2.5 py-1.5 text-sm font-semibold break-words"
+            >
               {member.nickname}
             </li>
           ))}
         </ul>
       )}
     </section>
+  );
+}
+
+export function PublicMemberListSkeleton() {
+  return (
+    <div className="flex flex-col gap-3">
+      <LoadingLabel />
+      <Skeleton className="h-6 w-28" />
+      <Skeleton className="h-16 w-full" />
+    </div>
   );
 }
