@@ -1,5 +1,6 @@
 "use client";
 
+import { Archive, Pencil } from "lucide-react";
 import {
   startTransition,
   useActionState,
@@ -49,28 +50,32 @@ export function MemberRow({ member }: { member: Member }) {
   };
 
   return (
-    <li className="px-3 py-2">
+    <li className="py-2 pr-2 pl-4">
       {mode === "view" ? (
-        <div className="flex items-center gap-2">
-          <span className="min-w-0 flex-1 break-words">{member.nickname}</span>
+        <div className="flex min-h-10 items-center gap-1">
+          <span className="min-w-0 flex-1 text-base font-semibold break-words">
+            {member.nickname}
+          </span>
           <Button
             ref={editButtonRef}
             type="button"
             size="sm"
-            variant="outline"
+            variant="ghost"
             aria-label={`Sửa ${member.nickname}`}
             onClick={() => setMode("edit")}
           >
+            <Pencil aria-hidden />
             Sửa
           </Button>
           <Button
             ref={removeButtonRef}
             type="button"
             size="sm"
-            variant="outline"
+            variant="ghost"
             aria-label={`Bỏ ${member.nickname}`}
             onClick={() => setMode("confirm")}
           >
+            <Archive aria-hidden />
             Bỏ
           </Button>
         </div>
@@ -108,7 +113,7 @@ function EditMemberForm({
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-2">
+    <form action={formAction} className="flex flex-col gap-3 py-2 pr-2">
       <input type="hidden" name="id" value={member.id} />
       <Input
         name="nickname"
@@ -135,7 +140,7 @@ function EditMemberForm({
         </Button>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       ) : null}
@@ -158,9 +163,9 @@ function RemoveMemberConfirm({
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-2">
+    <form action={formAction} className="flex flex-col gap-3 py-2 pr-2">
       <input type="hidden" name="id" value={member.id} />
-      <p className="text-sm break-words">
+      <p className="text-[0.9375rem] font-semibold break-words">
         Bỏ {member.nickname} khỏi danh sách?
       </p>
       <div className="flex gap-2">
@@ -185,7 +190,7 @@ function RemoveMemberConfirm({
         </Button>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       ) : null}

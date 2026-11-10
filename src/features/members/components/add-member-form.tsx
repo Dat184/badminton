@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,11 +33,12 @@ export function AddMemberForm() {
           className="min-w-0 flex-1"
         />
         <Button type="submit" disabled={pending}>
+          <Plus aria-hidden />
           {pending ? "Đang thêm…" : "Thêm"}
         </Button>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       ) : null}

@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import {
+  Board,
+  BoardBackLink,
+  BoardBar,
+  BoardTitle,
+  PAGE_CONTAINER,
+} from "@/components/ui/board";
+import { LoadingLabel, Skeleton } from "@/components/ui/skeleton";
 import { createSession } from "@/features/sessions/actions";
 import { SessionForm } from "@/features/sessions/components/session-form";
 import { todayInVietnam } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Tạo buổi đánh",
@@ -27,21 +35,38 @@ async function NewSessionForm() {
   );
 }
 
+function NewSessionFormSkeleton() {
+  return (
+    <div className="flex flex-col gap-5">
+      <LoadingLabel />
+      <div className="grid grid-cols-2 gap-3">
+        <Skeleton className="h-17" />
+        <Skeleton className="h-17" />
+      </div>
+      <Skeleton className="h-17" />
+      <Skeleton className="h-11 w-32" />
+    </div>
+  );
+}
+
 export default function NewSessionPage() {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-16">
-      <div className="flex flex-col gap-2">
-        <Link
-          href="/"
-          className="w-fit text-sm text-foreground/70 hover:text-foreground"
-        >
-          ← Trang chủ
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Tạo buổi đánh</h1>
+    <main className="flex flex-1 flex-col">
+      <Board>
+        <BoardBar>
+          <BoardBackLink href="/">Cầu lông</BoardBackLink>
+        </BoardBar>
+        <BoardTitle description="Chọn ngày, giờ và sân. Tạo xong, gửi link buổi vào nhóm để mọi người báo đi.">
+          Tạo buổi đánh
+        </BoardTitle>
+      </Board>
+      <div className={cn(PAGE_CONTAINER, "py-6")}>
+        <div className="rounded-md border bg-card p-4 sm:p-6">
+          <Suspense fallback={<NewSessionFormSkeleton />}>
+            <NewSessionForm />
+          </Suspense>
+        </div>
       </div>
-      <Suspense fallback="Đang tải…">
-        <NewSessionForm />
-      </Suspense>
     </main>
   );
 }

@@ -24,6 +24,14 @@ type SessionFormProps = {
   onCancel?: () => void;
 };
 
+function OptionalHint() {
+  return (
+    <span className="ml-auto text-[0.8125rem] font-normal text-muted-foreground">
+      Không bắt buộc
+    </span>
+  );
+}
+
 export function SessionForm({
   action,
   initialValues,
@@ -51,29 +59,37 @@ export function SessionForm({
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-5">
       {sessionId ? <input type="hidden" name="id" value={sessionId} /> : null}
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={playDateId}>Ngày</Label>
-        <Input
-          id={playDateId}
-          name="play_date"
-          type="date"
-          defaultValue={state.values.playDate}
-          required
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={playDateId}>Ngày</Label>
+          <Input
+            id={playDateId}
+            name="play_date"
+            type="date"
+            defaultValue={state.values.playDate}
+            required
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={startTimeId}>
+            Giờ
+            <OptionalHint />
+          </Label>
+          <Input
+            id={startTimeId}
+            name="start_time"
+            type="time"
+            defaultValue={state.values.startTime}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor={startTimeId}>Giờ (không bắt buộc)</Label>
-        <Input
-          id={startTimeId}
-          name="start_time"
-          type="time"
-          defaultValue={state.values.startTime}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={venueId}>Sân (không bắt buộc)</Label>
+        <Label htmlFor={venueId}>
+          Sân
+          <OptionalHint />
+        </Label>
         <Input
           id={venueId}
           name="venue"
@@ -84,12 +100,16 @@ export function SessionForm({
         />
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       ) : null}
       <div className="flex gap-2">
-        <Button type="submit" disabled={pending}>
+        <Button
+          type="submit"
+          disabled={pending}
+          className="flex-1 sm:flex-none"
+        >
           {pending ? pendingLabel : submitLabel}
         </Button>
         {onCancel ? (

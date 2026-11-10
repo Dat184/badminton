@@ -4,25 +4,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Visual world: the court flip scoreboard. A cobalt board band heads every
+ * screen and holds white flip tiles; the page ground is cool aluminium grey
+ * with white panels. One corner radius everywhere, 1px hairlines, no shadows.
+ * Score red is reserved for the one live number on a screen.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
+  --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), var(--font-be-vietnam), sans-serif;
+  --font-heading: var(--font-display);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -39,92 +32,111 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --color-placeholder: var(--placeholder);
+  --color-board: var(--board);
+  --color-board-deep: var(--board-deep);
+  --color-board-foreground: var(--board-foreground);
+  --color-board-muted: var(--board-muted);
+  --color-board-line: var(--board-line);
+  --color-tile: var(--tile);
+  --color-tile-foreground: var(--tile-foreground);
+  --color-score: var(--score);
+  --radius-sm: 4px;
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+
+  --animate-tile-flip: tile-flip 240ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  @keyframes tile-flip {
+    from {
+      transform: perspective(320px) rotateX(-88deg);
+    }
+    to {
+      transform: perspective(320px) rotateX(0deg);
+    }
+  }
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* Ground and panels */
+  --background: #edf0f5;
+  --foreground: #12151c;
+  --card: #ffffff;
+  --card-foreground: #12151c;
+  --popover: #ffffff;
+  --popover-foreground: #12151c;
+  --muted: #e4e8ef;
+  --muted-foreground: #4a5263;
+  --placeholder: #5d6578;
+  --accent: #f2f4f8;
+  --accent-foreground: #12151c;
+  --border: #d5dae3;
+  --input: #8a93a6;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Board cobalt carries primary actions and the shell */
+  --primary: #1e3fae;
+  --primary-foreground: #ffffff;
+  --secondary: #e3e8f6;
+  --secondary-foreground: #1e3fae;
+  --ring: #1e3fae;
+  --board: #1e3fae;
+  --board-deep: #17328c;
+  --board-foreground: #ffffff;
+  --board-muted: #c9d3f5;
+  --board-line: rgb(255 255 255 / 0.28);
+
+  /* Flip tiles */
+  --tile: #ffffff;
+  --tile-foreground: #12151c;
+  --tile-hinge: rgb(18 21 28 / 0.18);
+
+  /* Red: the live number, and confirming a delete */
+  --score: #d92d20;
+  --destructive: #b42318;
+
+  --radius: 6px;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply bg-background font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
     @apply bg-background text-foreground;
+    caret-color: var(--primary);
   }
-  html {
-    @apply font-sans;
+  ::selection {
+    background: var(--board-muted);
+    color: var(--foreground);
+  }
+  input[type="date"],
+  input[type="time"] {
+    accent-color: var(--primary);
+  }
+}
+
+@layer components {
+  /* Scoreboard numerals: heavy, condensed, every digit the same width. */
+  .tile-numerals {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums lining-nums;
+    letter-spacing: 0;
+  }
+  /* Board headings: the same face, less condensed so Vietnamese diacritics breathe. */
+  .board-heading {
+    font-family: var(--font-display);
+    font-stretch: 78%;
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
 }

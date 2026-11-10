@@ -1,5 +1,7 @@
 "use client";
 
+import { Check, Plus, RotateCw, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   startTransition,
   useActionState,
@@ -8,6 +10,7 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ScoreTile } from "@/components/ui/score-tile";
 import type { Member } from "@/features/members/member";
 import {
   addGuest,
@@ -19,6 +22,7 @@ import {
   type Attendee,
   GUEST_NAME_MAX_LENGTH,
 } from "@/features/sessions/session";
+import { cn } from "@/lib/utils";
 
 type AttendanceListProps = {
   sessionId: string;
@@ -90,6 +94,7 @@ export function AttendanceList({
     () => new Set(),
   );
   const [actionError, setActionError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleToggleMember = (memberId: string, attending: boolean) => {
     if (pendingMemberIds.has(memberId)) {
@@ -156,30 +161,68 @@ export function AttendanceList({
   return (
     <section
       aria-labelledby="attendance-heading"
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-4"
     >
-      <div className="flex flex-col gap-1">
-        <h2
-          id="attendance-heading"
-          className="text-xl font-semibold tracking-tight"
-        >
-          Ai đi? ({attendeeCount})
-        </h2>
-        <p className="text-sm text-foreground/70">
-          Bấm vào tên mình để báo đi hoặc không đi.
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h2
+            id="attendance-heading"
+            className="text-[1.375rem] leading-tight font-bold"
+          >
+            Ai đi?
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Bấm vào tên mình để báo đi, bấm lần nữa để bỏ.
+          </p>
+        </div>
+        <p className="flex shrink-0 items-center gap-2">
+          <ScoreTile value={attendeeCount} size="count" tone="score" />
+          <span
+            aria-hidden
+            className="text-sm font-semibold whitespace-nowrap text-muted-foreground"
+          >
+            người đi
+          </span>
+          <span className="sr-only" aria-live="polite">
+            {attendeeCount} người đi
+          </span>
         </p>
       </div>
 
+      {actionError ? (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 rounded-md border border-destructive/30 bg-card py-2 pr-2 pl-4"
+        >
+          <p className="text-sm font-medium text-destructive">{actionError}</p>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setActionError(null);
+              router.refresh();
+            }}
+          >
+            <RotateCw aria-hidden />
+            Tải lại
+          </Button>
+        </div>
+      ) : null}
+
       {!hasRows ? (
-        <p className="text-sm text-foreground/70">Chưa có thành viên nào.</p>
+        <p className="rounded-md border border-dashed border-input/50 bg-card px-4 py-6 text-center text-[0.9375rem] text-muted-foreground">
+          Nhóm chưa có thành viên nào. Vẫn có thể thêm người ngoài nhóm bên
+          dưới.
+        </p>
       ) : (
-        <ul className="flex flex-col divide-y rounded-lg border">
+        <ul className="flex flex-col divide-y overflow-hidden rounded-md border bg-card">
           {memberRows.map((row) => {
             const checked = optimisticMemberIds.has(row.memberId);
             const rowPending = pendingMemberIds.has(row.memberId);
             return (
               <li key={row.memberId}>
-                <label className="flex min-h-11 cursor-pointer items-center gap-3 px-3 py-2 select-none has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
+                <label className="flex min-h-14 cursor-pointer items-center gap-3 py-2 pr-2 pl-4 transition-colors select-none hover:bg-accent has-[:disabled]:cursor-wait has-[:focus-visible]:bg-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-ring">
                   <input
                     type="checkbox"
                     checked={checked}
@@ -190,9 +233,37 @@ export function AttendanceList({
                         event.currentTarget.checked,
                       )
                     }
-                    className="size-5 shrink-0 accent-primary"
+                    className="peer sr-only"
                   />
-                  <span className="min-w-0 flex-1 break-words">{row.name}</span>
+                  <span
+                    className={cn(
+                      "min-w-0 flex-1 text-base break-words",
+                      checked
+                        ? "font-semibold text-foreground"
+                        : "font-medium text-muted-foreground",
+                    )}
+                  >
+                    {row.name}
+                  </span>
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "inline-flex h-11 w-26 shrink-0 items-center justify-center gap-1.5 rounded-md border text-sm font-bold transition-colors",
+                      checked
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-input/60 bg-card text-muted-foreground",
+                      rowPending && "opacity-60",
+                    )}
+                  >
+                    {checked ? (
+                      <>
+                        <Check className="size-4" strokeWidth={3} />
+                        Đi
+                      </>
+                    ) : (
+                      "Đi?"
+                    )}
+                  </span>
                 </label>
               </li>
             );
@@ -202,33 +273,38 @@ export function AttendanceList({
             return (
               <li
                 key={guest.id}
-                className="flex min-h-11 items-center gap-2 px-3 py-2"
+                className="flex min-h-14 items-center gap-2 py-2 pr-2 pl-4"
               >
-                <span className="min-w-0 flex-1 break-words">{guest.name}</span>
-                <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground/70">
-                  khách
+                <span className="min-w-0 flex-1 text-base font-semibold break-words">
+                  {guest.name}
+                </span>
+                <span className="rounded-sm bg-muted px-1.5 py-1 text-xs leading-none font-semibold text-muted-foreground">
+                  Khách
                 </span>
                 <Button
                   type="button"
-                  size="sm"
-                  variant="outline"
-                  aria-label={`Bỏ ${guest.name}`}
+                  size="icon"
+                  variant="ghost"
+                  aria-label={`Bỏ ${guest.name} khỏi buổi`}
+                  title="Bỏ khỏi buổi"
                   disabled={guestPending}
                   onClick={() => handleRemoveGuest(guest.id)}
+                  className="mr-2 text-muted-foreground hover:text-foreground"
                 >
-                  Bỏ
+                  <X aria-hidden />
                 </Button>
+                <span
+                  aria-hidden
+                  className="inline-flex h-11 w-26 shrink-0 items-center justify-center gap-1.5 rounded-md border border-primary bg-primary text-sm font-bold text-primary-foreground"
+                >
+                  <Check className="size-4" strokeWidth={3} />
+                  Đi
+                </span>
               </li>
             );
           })}
         </ul>
       )}
-
-      {actionError ? (
-        <p role="alert" className="text-sm text-destructive">
-          {actionError}
-        </p>
-      ) : null}
 
       <AddGuestForm sessionId={sessionId} />
     </section>
@@ -261,12 +337,13 @@ function AddGuestForm({ sessionId }: { sessionId: string }) {
           aria-invalid={state.error ? true : undefined}
           className="min-w-0 flex-1"
         />
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" variant="secondary" disabled={pending}>
+          <Plus aria-hidden />
           {pending ? "Đang thêm…" : "Thêm"}
         </Button>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {state.error}
         </p>
       ) : null}
